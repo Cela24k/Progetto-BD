@@ -1,7 +1,11 @@
 from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.orm import declarative_base, Session, sessionmaker
+import os
+from dotenv import load_dotenv
 
-engine = create_engine('sqlite://', echo=True)
+load_dotenv()
+
+engine = create_engine(os.environ.get('DB_URL'), echo=True)
 
 Base = declarative_base()
 
@@ -16,11 +20,11 @@ class User(Base):
     def __repr__(self):
         return f"<User(id={self.id}, username='{self.username}', email='{self.email}')>"
     
-    @classmethod
-    async def add_user(cls, username, email, password):
-        Session = sessionmaker(bind=engine)
-        session = Session
-        user = cls(username=username, email=email, password=password) # cls is needed to make this method work in subclasses
+    @classmethod # cls è esattamente come il self nei classmethods
+    def add_user(cls, username, email, password):
+        Base.metadata.create_all(engine) # crea la tabella se non esiste
+        session = Session(bind=engine)
+        user = cls(username=username, email=email, password=password)
         session.add(user)
         session.commit()
         session.close()
