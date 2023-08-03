@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-engine = create_engine(os.environ.get('DB_URL'), echo=True)
+engine = create_engine(os.environ.get('DB_URL'), echo=True,)
 
 Base = declarative_base()
 
